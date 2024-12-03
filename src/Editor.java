@@ -169,6 +169,7 @@ public class Editor extends JFrame
 				figuras[qtasFiguras] = new Circulo(p1.getX(), p1.getY(), raio , corAtual);
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
+				esperaRaioCirculo = false;
 			}
 
 		}
@@ -286,7 +287,7 @@ public class Editor extends JFrame
 		esperaFimReta = false;
 		esperaCentroCirculo = false;
 		esperaOval = false;
-		esperaRaioCirculo = true;
+		esperaRaioCirculo = false;
 	}
 
 	private class DesenhaPonto implements ActionListener {
