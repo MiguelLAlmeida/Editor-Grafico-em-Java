@@ -3,27 +3,27 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 
-public class Editor extends JFrame 
+public class Editor extends JFrame
 {
-	private JButton btnPonto, btnLinha, btnCirculo, btnElipse, btnCores, 
+	private JButton btnPonto, btnLinha, btnCirculo, btnOval, btnCores,
 	btnAbrir, btnSalvar, btnApagar, btnSair;
 	static private JPanel pnlBotoes;
-	static private JDesktopPane panDesenho; 
-	static private JInternalFrame frame; 
+	static private JDesktopPane panDesenho;
+	static private JInternalFrame frame;
 	static private MeuJPanel pnlDesenho;
-	
-	private static File arquivo;	
+
+	private static File arquivo;
 	private static Ponto[] figuras = new Ponto[20];
 	static int qtasFiguras;
 	private JLabel statusBar1, statusBar2;
-	static boolean esperaPonto, esperaInicioReta, esperaFimReta;
+	static boolean esperaPonto, esperaInicioReta, esperaFimReta, esperaCentroCirculo, esperaOval, esperaRaioCirculo;
 	static private Color corAtual = Color.black;
 	private static Ponto p1 = new Ponto();
-	
+
 	public Editor()	// construtor de Editor que criará o JFrame, colocará seu título,
 	{				// estabelecerá um tamanho para o formulário e o exibirá
 		super("Editor Gráfico");	// cria o JFrame e coloca um título
-		
+
 		// cria os botões do editor
 
 		Icon imgAbrir = new ImageIcon("abrir.jpg");
@@ -32,18 +32,18 @@ public class Editor extends JFrame
 		btnPonto = new JButton("Ponto", new ImageIcon("ponto.jpg"));
 		btnLinha = new JButton("Linha", new ImageIcon("linha.jpg"));
 		btnCirculo = new JButton("Circulo", new ImageIcon("circulo.jpg"));
-		btnElipse = new JButton("Elipse", new ImageIcon("elipse.jpg"));
+		btnOval = new JButton("Elipse", new ImageIcon("elipse.jpg"));
 		btnCores = new JButton("Cores", new ImageIcon("cores.jpg"));
 		btnApagar = new JButton("Apagar", new ImageIcon("apagar.jpg"));
 		btnSair = new JButton("Sair", new ImageIcon("sair.jpg"));
-		
+
 		// cria o JPanel que armazenará os botões
 
-		pnlBotoes = new JPanel(); 
+		pnlBotoes = new JPanel();
 
 		// cria o layout usado para dispor fisicamente os botões		
-		FlowLayout flwBotoes = new FlowLayout(); 
-		
+		FlowLayout flwBotoes = new FlowLayout();
+
 		//	 informa que os componentes do pnlBotoes serão dispostos em forma livre
 		pnlBotoes.setLayout(flwBotoes);
 
@@ -55,7 +55,7 @@ public class Editor extends JFrame
 		pnlBotoes.add(btnPonto);
 		pnlBotoes.add(btnLinha);
 		pnlBotoes.add(btnCirculo);
-		pnlBotoes.add(btnElipse);
+		pnlBotoes.add(btnOval);
 		pnlBotoes.add(btnCores);
 		pnlBotoes.add(btnApagar);
 		pnlBotoes.add(btnSair);
@@ -71,27 +71,29 @@ public class Editor extends JFrame
 		cntForm.add(panDesenho);
 		frame = new JInternalFrame("Nenhum arquivo aberto", true, true, true, true);
 		panDesenho.add(frame);
-		frame.setSize(this.getWidth() / 2,this.getHeight() / 2);		
+		frame.setSize(this.getWidth() / 2,this.getHeight() / 2);
 		frame.show();
-    	frame.setOpaque(true); 
-	    	
+    	frame.setOpaque(true);
+
 		Container cntFrame = frame.getContentPane();
 		pnlDesenho = new MeuJPanel();
 		cntFrame.add(pnlDesenho);
-		
-		btnAbrir.addActionListener(new FazAbertura());  
+
+		btnAbrir.addActionListener(new FazAbertura());
 		btnPonto.addActionListener(new DesenhaPonto());
 		btnLinha.addActionListener(new DesenhaReta());
+		btnOval.addActionListener(new DesenhaOval());
+		btnCirculo.addActionListener(new DesenhaCirculo());
 	}
 
 	public static void desenhaObjetos()
 	{
 	   pnlDesenho.paintComponent(pnlDesenho.getGraphics());
 	}
-	
+
 	public static void main(String[] args) {
 		Editor aplicacao = new Editor();
-		aplicacao.addWindowListener 
+		aplicacao.addWindowListener
 		(
 			new WindowAdapter ()    //  cria instância da interface
 			{
@@ -104,8 +106,7 @@ public class Editor extends JFrame
 
 	}
 
-	private class MeuJPanel extends JPanel 
-	  									implements MouseListener, MouseMotionListener
+	private class MeuJPanel extends JPanel implements MouseListener, MouseMotionListener
 	{
 		JPanel pnlStatus = new JPanel();
 
@@ -114,12 +115,12 @@ public class Editor extends JFrame
 			for (int qualFigura =0 ; qualFigura < qtasFiguras; qualFigura++)
 				figuras[qualFigura].desenha(figuras[qualFigura].getCor(), g);
 		}
-		
+
 		public void mouseClicked (MouseEvent e)
 		{
 			statusBar1.setText("Mensagem:");
 		}
-		
+
 		public void mousePressed (MouseEvent e)
 		{
 			if (esperaPonto)
@@ -129,27 +130,49 @@ public class Editor extends JFrame
 				qtasFiguras++;
 				esperaPonto = false;
 			}
-			else
-				if (esperaInicioReta)
+			else if (esperaInicioReta)
 				{
 					p1.setCor(corAtual);
 					p1.setX(e.getX());
 					p1.setY(e.getY());
 					esperaInicioReta = false;
 					esperaFimReta = true;
-				    statusBar1.setText("Mensagem: clique o ponto final da reta");	
+				    statusBar1.setText("Mensagem: clique o ponto final da reta");
 				 }
-				 else
-					if (esperaFimReta)
-					{
-						esperaInicioReta = false;
-						esperaFimReta = false;
-						figuras[qtasFiguras] =new Linha(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
-						figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
-						qtasFiguras++;
-					}
+			else if (esperaFimReta)
+				{
+					esperaInicioReta = false;
+					esperaFimReta = false;
+					figuras[qtasFiguras] =new Linha(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
+					figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
+					qtasFiguras++;
+				}
+			else if (esperaOval){
+				esperaOval = false;
+				figuras[qtasFiguras] = new Oval(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
+				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
+				qtasFiguras++;
+			}
+			else if (esperaCentroCirculo){
+				p1.setCor(corAtual);
+				p1.setX(e.getX());
+				p1.setY(e.getY());
+				esperaCentroCirculo = false;
+				esperaRaioCirculo = true;
+				statusBar1.setText("Mensagem: clique o ponto final da reta");
+			}
+			else if (esperaRaioCirculo){
+				int raio = p1.getX() - e.getX();
+				if (p1.getX() < e.getX()){
+					raio = e.getX() - p1.getX();
+				}
+				figuras[qtasFiguras] = new Circulo(p1.getX(), p1.getY(), raio , corAtual);
+				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
+				qtasFiguras++;
+			}
+
 		}
-		
+
 		public void mouseEntered (MouseEvent e)
 		{
 			// não faz nada por enquanto
@@ -159,22 +182,22 @@ public class Editor extends JFrame
 		{
 			// não faz nada por enquanto
 		}
-		
+
 		public void mouseReleased (MouseEvent e)
 		{
 			// não faz nada por enquanto
 		}
-		
+
 		public void mouseDragged(MouseEvent e)
 		{
-			
+
 		}
 
 		public void mouseMoved(MouseEvent e)
 		{
 			statusBar2.setText("Coordenada: "+e.getX()+","+e.getY());
 		}
-		
+
 		public MeuJPanel()
 		{
 			super();
@@ -188,7 +211,7 @@ public class Editor extends JFrame
 			getContentPane().add(pnlStatus, BorderLayout.SOUTH);
 		}
 	}
-	
+
 	private class FazAbertura implements ActionListener {
 		  public void actionPerformed(ActionEvent e)	// código executado no evento
 		  {
@@ -212,12 +235,12 @@ public class Editor extends JFrame
 	            		int xBase = Integer.parseInt(linha.substring(5,10).trim());
 	            		int yBase = Integer.parseInt(linha.substring(10,15).trim());
 	            		int corR = Integer.parseInt(linha.substring(15,20).trim());
-	            		int corG = Integer.parseInt(linha.substring(20,25).trim());	            		
+	            		int corG = Integer.parseInt(linha.substring(20,25).trim());
 	            		int corB = Integer.parseInt(linha.substring(25,30).trim());
 	            		Color cor = new Color(corR, corG, corB);
 	            		switch (tipo.charAt(0))
 	            		{
-	            		case 'p' : 
+	            		case 'p' :
 	            			figuras[qtasFiguras] = new Ponto(xBase, yBase, cor);
 	            			break;
 	            		case 'l' :
@@ -261,10 +284,13 @@ public class Editor extends JFrame
 		esperaPonto = false;
 		esperaInicioReta = false;
 		esperaFimReta = false;
+		esperaCentroCirculo = false;
+		esperaOval = false;
+		esperaRaioCirculo = true;
 	}
 
 	private class DesenhaPonto implements ActionListener {
-		  public void actionPerformed(ActionEvent e)	
+		  public void actionPerformed(ActionEvent e)
 		  {
 			  statusBar1.setText("Mensagem: clique o local do ponto desejado");
 			  limpaEsperas();
@@ -273,11 +299,26 @@ public class Editor extends JFrame
 		}
 
 	private class DesenhaReta implements ActionListener {
-		  public void actionPerformed(ActionEvent e)	
+		  public void actionPerformed(ActionEvent e)
 		  {
 			  statusBar1.setText("Mensagem: clique o ponto inicial da reta");
 			  limpaEsperas();
 			  esperaInicioReta = true;
 		  }
 		}
+	private class DesenhaOval implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			statusBar1.setText("Mensagem: clique o centro da figura Oval");
+			limpaEsperas();
+			esperaOval = true;
+		}
+	}
+	private class DesenhaCirculo implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			statusBar1.setText("Mensagem: clique o centro do círculo");
+			limpaEsperas();
+			esperaCentroCirculo = true;
+		}
+	}
 }
