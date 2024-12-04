@@ -16,7 +16,7 @@ public class Editor extends JFrame
 	private static Ponto[] figuras = new Ponto[20];
 	static int qtasFiguras;
 	private JLabel statusBar1, statusBar2;
-	static boolean esperaPonto, esperaInicioReta, esperaFimReta, esperaCentroCirculo, esperaOval, esperaRaioCirculo;
+	static boolean esperaPonto, esperaInicioReta, esperaFimReta, esperaCentroCirculo,esperaRaioCirculo, esperaIniOval, esperaFimOval;
 	static private Color corAtual = Color.black;
 	private static Ponto p1 = new Ponto();
 
@@ -147,9 +147,22 @@ public class Editor extends JFrame
 					figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 					qtasFiguras++;
 				}
-			else if (esperaOval){
-				esperaOval = false;
-				figuras[qtasFiguras] = new Oval(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
+			else if (esperaIniOval){
+				p1.setCor(corAtual);
+				p1.setX(e.getX());
+				p1.setY(e.getY());
+				esperaIniOval = false;
+				esperaFimOval = true;
+				statusBar1.setText("Mensagem: clique na outra extremidade do Oval");
+			}
+			else if (esperaFimOval){
+				int raioA = (e.getX() - p1.getX()) / 2;
+				int raioB = (e.getY() - p1.getY()) / 2;
+				int centroX = (p1.getX() + e.getX()) / 2;
+				int centroY = (p1.getY() + e.getY()) / 2;
+
+				esperaFimOval = false;
+				figuras[qtasFiguras] = new Oval(centroX, centroY, raioA, raioB, corAtual);
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 			}
@@ -286,8 +299,9 @@ public class Editor extends JFrame
 		esperaInicioReta = false;
 		esperaFimReta = false;
 		esperaCentroCirculo = false;
-		esperaOval = false;
 		esperaRaioCirculo = false;
+		esperaIniOval = false;
+		esperaFimOval = false;
 	}
 
 	private class DesenhaPonto implements ActionListener {
@@ -312,7 +326,7 @@ public class Editor extends JFrame
 		{
 			statusBar1.setText("Mensagem: clique o centro da figura Oval");
 			limpaEsperas();
-			esperaOval = true;
+			esperaIniOval = true;
 		}
 	}
 	private class DesenhaCirculo implements ActionListener{

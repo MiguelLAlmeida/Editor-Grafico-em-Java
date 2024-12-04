@@ -28,8 +28,7 @@ public class Oval extends Ponto {
 		raioB = novoRaio;
 	}
 	
-	public Oval(int xCentro, int yCentro, int novoRaioA, 
-			     int novoRaioB, Color novaCor)
+	public Oval(int xCentro, int yCentro, int novoRaioA, int novoRaioB, Color novaCor)
 	{
 		super(xCentro, yCentro, novaCor);  // construtor de Ponto(x,y)
 		setRaioA(novoRaioA);
