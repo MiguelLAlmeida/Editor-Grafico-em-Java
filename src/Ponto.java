@@ -27,7 +27,11 @@
 	  
 	  public void setCor(Color novaCor)
 	  {
-	  	cor = novaCor;
+		  if (novaCor != null) {
+			  cor = novaCor;
+		  } else {
+			  cor = Color.black;
+		  }
 	  }
 	  
 	  public int getX() {

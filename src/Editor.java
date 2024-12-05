@@ -26,16 +26,16 @@ public class Editor extends JFrame
 
 		// cria os botões do editor
 
-		Icon imgAbrir = new ImageIcon("abrir.jpg");
+		Icon imgAbrir = new ImageIcon("documents/images/abrir.jpg");
 		btnAbrir = new JButton("Abrir", imgAbrir);
-		btnSalvar = new JButton("Salvar", new ImageIcon("salvar.jpg"));
-		btnPonto = new JButton("Ponto", new ImageIcon("ponto.jpg"));
-		btnLinha = new JButton("Linha", new ImageIcon("linha.jpg"));
-		btnCirculo = new JButton("Circulo", new ImageIcon("circulo.jpg"));
-		btnOval = new JButton("Elipse", new ImageIcon("elipse.jpg"));
-		btnCores = new JButton("Cores", new ImageIcon("cores.jpg"));
-		btnApagar = new JButton("Apagar", new ImageIcon("apagar.jpg"));
-		btnSair = new JButton("Sair", new ImageIcon("sair.jpg"));
+		btnSalvar = new JButton("Salvar", new ImageIcon("documents/images/salvar.jpg"));
+		btnPonto = new JButton("Ponto", new ImageIcon("documents/images/ponto.jpg"));
+		btnLinha = new JButton("Linha", new ImageIcon("documents/images/linha.jpg"));
+		btnCirculo = new JButton("Circulo", new ImageIcon("documents/images/circulo.jpg"));
+		btnOval = new JButton("Elipse", new ImageIcon("documents/images/elipse.jpg"));
+		btnCores = new JButton("Cores", new ImageIcon("documents/images/cores.jpg"));
+		btnApagar = new JButton("Apagar", new ImageIcon("documents/images/apagar.jpg"));
+		btnSair = new JButton("Sair", new ImageIcon("documents/images/sair.jpg"));
 
 		// cria o JPanel que armazenará os botões
 
@@ -84,6 +84,8 @@ public class Editor extends JFrame
 		btnLinha.addActionListener(new DesenhaReta());
 		btnOval.addActionListener(new DesenhaOval());
 		btnCirculo.addActionListener(new DesenhaCirculo());
+		btnCores.addActionListener(new SolicitaCores());
+		btnSalvar.addActionListener(new FazGravacao());
 	}
 
 	public static void desenhaObjetos()
@@ -226,66 +228,32 @@ public class Editor extends JFrame
 		}
 	}
 
-	private class FazAbertura implements ActionListener {
-		  public void actionPerformed(ActionEvent e)	// código executado no evento
+	private class FazGravacao implements ActionListener {
+		  public void actionPerformed(ActionEvent e)
 		  {
 			JFileChooser arqEscolhido = new JFileChooser ();
 			arqEscolhido.setDialogTitle("Abrir");
 		  	int result = arqEscolhido.showOpenDialog(Editor.this);
 	        if (result == JFileChooser.APPROVE_OPTION) {
 	            arquivo = arqEscolhido.getSelectedFile();
-
 	            try
 				{
-	            	BufferedReader arqFiguras = new BufferedReader(new FileReader(arquivo.getName()));
-	            	try
-	            	{
-	            		qtasFiguras = 0;
-	            	String linha = arqFiguras.readLine();
-	            	while (linha != null)
-	            	{
-	            		System.out.println(linha);
-	            		String tipo = linha.substring(0,5).trim();
-	            		int xBase = Integer.parseInt(linha.substring(5,10).trim());
-	            		int yBase = Integer.parseInt(linha.substring(10,15).trim());
-	            		int corR = Integer.parseInt(linha.substring(15,20).trim());
-	            		int corG = Integer.parseInt(linha.substring(20,25).trim());
-	            		int corB = Integer.parseInt(linha.substring(25,30).trim());
-	            		Color cor = new Color(corR, corG, corB);
-	            		switch (tipo.charAt(0))
-	            		{
-	            		case 'p' :
-	            			figuras[qtasFiguras] = new Ponto(xBase, yBase, cor);
-	            			break;
-	            		case 'l' :
-	            			int xFinal =Integer.parseInt(linha.substring(30,35).trim());
-	            			int yFinal =Integer.parseInt(linha.substring(35,40).trim());
-	            			figuras[qtasFiguras] = new Linha(xBase, yBase, xFinal, yFinal, cor);
-	            			break;
-	            		case 'c' :
-	            			int raio =Integer.parseInt(linha.substring(30,35).trim());
-	            			figuras[qtasFiguras] = new Circulo(xBase, yBase, raio, cor);
-	            			break;
-	            		case 'o' :
-	            			int raioA =Integer.parseInt(linha.substring(30,35).trim());
-	            			int raioB =Integer.parseInt(linha.substring(35,40).trim());
-	            			figuras[qtasFiguras] = new Oval(xBase, yBase, raioA, raioB, cor);
-	            			break;
-	            		}
-	            		qtasFiguras++;
-	            		linha = arqFiguras.readLine();
-	            	}
-	            	arqFiguras.close();
-
-	            	frame.setTitle(arquivo.getName());
-	            	desenhaObjetos();
-	            	}
-	            	catch (IOException ioe)
-	            	{
-		            	System.out.println("Erro de leitura no arquivo");
-	            	}
+					if (arquivo != null){
+						BufferedWriter arqFiguras = new BufferedWriter(new FileWriter(arquivo.getName()));
+						try {
+							for (int i = 0; i < qtasFiguras; i++){
+								System.out.println(i+1);
+								System.out.println(figuras[i].toString());
+								arqFiguras.write(figuras[i].toString() + "\n");
+							}
+							arqFiguras.close();
+						}
+						catch (IOException ioe) {
+							System.out.println("Erro de gravação no arquivo");
+						}
+					}
 	            }
-	            catch (FileNotFoundException ex)
+	            catch (IOException ex)
 				{
 	            	System.out.println("Arquivo não pôde ser aberto");
 				}
@@ -293,6 +261,74 @@ public class Editor extends JFrame
 	        }
 		  }
 		}
+
+	private class FazAbertura implements ActionListener {
+		public void actionPerformed(ActionEvent e)	// código executado no evento
+		{
+			JFileChooser arqEscolhido = new JFileChooser ();
+			arqEscolhido.setDialogTitle("Abrir");
+			int result = arqEscolhido.showOpenDialog(Editor.this);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				arquivo = arqEscolhido.getSelectedFile();
+				try
+				{
+					BufferedReader arqFiguras = new BufferedReader(new FileReader(arquivo.getAbsolutePath()));
+					try
+					{
+						qtasFiguras = 0;
+						String linha = arqFiguras.readLine();
+						while (linha != null)
+						{
+							System.out.println(linha);
+							String tipo = linha.substring(0,5).trim();
+							int xBase = Integer.parseInt(linha.substring(5,10).trim());
+							int yBase = Integer.parseInt(linha.substring(10,15).trim());
+							int corR = Integer.parseInt(linha.substring(15,20).trim());
+							int corG = Integer.parseInt(linha.substring(20,25).trim());
+							int corB = Integer.parseInt(linha.substring(25,30).trim());
+							Color cor = new Color(corR, corG, corB);
+							switch (tipo.charAt(0))
+							{
+								case 'p' :
+									figuras[qtasFiguras] = new Ponto(xBase, yBase, cor);
+									break;
+								case 'l' :
+									int xFinal =Integer.parseInt(linha.substring(30,35).trim());
+									int yFinal =Integer.parseInt(linha.substring(35,40).trim());
+									figuras[qtasFiguras] = new Linha(xBase, yBase, xFinal, yFinal, cor);
+									break;
+								case 'c' :
+									int raio =Integer.parseInt(linha.substring(30,35).trim());
+									figuras[qtasFiguras] = new Circulo(xBase, yBase, raio, cor);
+									break;
+								case 'o' :
+									int raioA =Integer.parseInt(linha.substring(30,35).trim());
+									int raioB =Integer.parseInt(linha.substring(35,40).trim());
+									figuras[qtasFiguras] = new Oval(xBase, yBase, raioA, raioB, cor);
+									break;
+							}
+							qtasFiguras++;
+							linha = arqFiguras.readLine();
+						}
+						arqFiguras.close();
+
+						frame.setTitle(arquivo.getName());
+						desenhaObjetos();
+					}
+					catch (IOException ioe)
+					{
+						System.out.println("Erro de leitura no arquivo");
+					}
+				}
+				catch (FileNotFoundException ex)
+				{
+					System.out.println("Arquivo não pôde ser aberto");
+				}
+				// processamento do arquivo conforme descrito na apostila (página 7)
+			}
+		}
+	}
+
 
 	private void limpaEsperas() {
 		esperaPonto = false;
@@ -334,6 +370,11 @@ public class Editor extends JFrame
 			statusBar1.setText("Mensagem: clique o centro do círculo");
 			limpaEsperas();
 			esperaCentroCirculo = true;
+		}
+	}
+	private class SolicitaCores implements ActionListener{
+		public void actionPerformed(ActionEvent e){
+			corAtual = JColorChooser.showDialog(null, "Selecione uma cor", Color.black);
 		}
 	}
 }
