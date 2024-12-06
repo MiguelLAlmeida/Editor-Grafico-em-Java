@@ -52,22 +52,20 @@
 	  	g.drawLine(getX(),getY(),getX(),getY());
 	  }
 
-	  public String transformaString(int valor, int quantasPosicoes)		
-	  { 
-	       String cadeia = new String(valor+"");				
-	       while (cadeia.length() < quantasPosicoes) 
-	          cadeia = "0"+cadeia; 
-	       return cadeia.substring(0,quantasPosicoes); // corta, se necess�rio, para tamanho m�ximo 
+	  public String transformaString(int valor, int quantasPosicoes) {
+	       String cadeia = new String(valor+"");
+	       while (cadeia.length() < quantasPosicoes)
+	          cadeia = "0"+cadeia;
+	       return cadeia.substring(0,quantasPosicoes);
 	  }
 
 	  public String transformaString(String valor, int quantasPosicoes)		
 	  { 
-		    String cadeia = new String(valor+"");				
-		    while (cadeia.length() < quantasPosicoes) 
-		       cadeia = cadeia+" "; 
-		    return cadeia.substring(0,quantasPosicoes); // corta, se necess�rio, para
-		 // tamanho m�ximo 
-		  }
+		    String cadeia = new String(valor+"");
+		    while (cadeia.length() < quantasPosicoes)
+		       cadeia = cadeia+" ";
+		    return cadeia.substring(0,quantasPosicoes);
+	  }
 		  
 		  public String toString()
 		  {

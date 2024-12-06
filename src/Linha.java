@@ -1,9 +1,6 @@
 import java.awt.*;  // para acessar Color e
 					 // m�todos de desenho
 public class Linha extends Ponto {
-  // herda (x, y) da classe Ponto, que s�o as coordenadas
-  // do ponto inicial da reta; tamb�m herda a cor e, em 
-  // seguida define o ponto final:
 	Ponto pontoFinal;
 	
 	public Linha()
@@ -25,4 +22,35 @@ public class Linha extends Ponto {
 		g.drawLine(super.getX(),super.getY(),   // ponto inicial
 				   pontoFinal.getX(), pontoFinal.getY());
 	}
+
+	 public Ponto getPontoFinal() {
+		return pontoFinal;
+	}
+
+	public String transformaString(int valor, int quantasPosicoes) {
+		 String cadeia = new String(valor+"");
+		 while (cadeia.length() < quantasPosicoes)
+			 cadeia = "0"+cadeia;
+		 return cadeia.substring(0,quantasPosicoes);
+	 }
+
+	 public String transformaString(String valor, int quantasPosicoes)
+	 {
+		 String cadeia = new String(valor+"");
+		 while (cadeia.length() < quantasPosicoes)
+			 cadeia = cadeia+" ";
+		 return cadeia.substring(0,quantasPosicoes);
+	 }
+
+	 public String toString()
+	 {
+		 return	transformaString("o",5)+
+				 transformaString(getX(),5)+
+				 transformaString(getY(),5)+
+				 transformaString(getPontoFinal().getX(),5)+
+				 transformaString(getPontoFinal().getX(),5)+
+				 transformaString(getCor().getRed(),5)+
+				 transformaString(getCor().getGreen(),5)+
+				 transformaString(getCor().getBlue(),5);
+	 }
 }

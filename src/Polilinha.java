@@ -2,7 +2,7 @@ import java.awt.*;  // para acessar Color e
 // m�todos de desenho
 public class Polilinha extends Ponto {
     // herda (x, y) da classe Ponto, que s�o as coordenadas
-    // do ponto inicial da reta; tamb�m herda a cor
+    // do ponto inicial da reta; tambem herda a cor
     int[] xPontos, yPontos;
     int numeroPontos;
 
@@ -19,9 +19,6 @@ public class Polilinha extends Ponto {
         xPontos = x2;
         yPontos = y2;
         numeroPontos = xPontos.length;
-
-        // nesse construtor que eu to com um pouco de dúvida!
-
     }
 
     public void desenha(Color corDesenho, Graphics g) {
