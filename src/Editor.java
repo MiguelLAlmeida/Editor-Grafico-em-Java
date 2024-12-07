@@ -5,7 +5,7 @@ import java.io.*;
 
 public class Editor extends JFrame
 {
-	private JButton btnPonto, btnLinha, btnCirculo, btnOval, btnCores,
+	private JButton btnPonto, btnLinha, btnCirculo, btnOval, btnRetangulo, btnPolilinha, btnCores,
 	btnAbrir, btnSalvar, btnApagar, btnSair;
 	static private JPanel pnlBotoes;
 	static private JDesktopPane panDesenho;
@@ -16,7 +16,7 @@ public class Editor extends JFrame
 	private static Ponto[] figuras = new Ponto[20];
 	static int qtasFiguras;
 	private JLabel statusBar1, statusBar2;
-	static boolean esperaPonto, esperaInicioReta, esperaFimReta, esperaCentroCirculo,esperaRaioCirculo, esperaIniOval, esperaFimOval;
+	static boolean esperaPonto, esperaInicioReta, esperaFimReta, esperaCentroCirculo,esperaRaioCirculo, esperaIniOval, esperaFimOval, esperaIniRec, esperaLargEAltRec, esperaIniPolilinha;
 	static private Color corAtual = Color.black;
 	private static Ponto p1 = new Ponto();
 
@@ -31,8 +31,10 @@ public class Editor extends JFrame
 		btnSalvar = new JButton("Salvar", new ImageIcon("documents/images/salvar.jpg"));
 		btnPonto = new JButton("Ponto", new ImageIcon("documents/images/ponto.jpg"));
 		btnLinha = new JButton("Linha", new ImageIcon("documents/images/linha.jpg"));
-		btnCirculo = new JButton("Circulo", new ImageIcon("documents/images/circulo.jpg"));
+		btnCirculo = new JButton("Círculo", new ImageIcon("documents/images/circulo.jpg"));
 		btnOval = new JButton("Elipse", new ImageIcon("documents/images/elipse.jpg"));
+		btnRetangulo = new JButton("Retângulo", new ImageIcon("documents/image/retangulo.jpg"));
+		btnPolilinha = new JButton("Polilinha", new ImageIcon("documents/image/polilinha.jpg"));
 		btnCores = new JButton("Cores", new ImageIcon("documents/images/cores.jpg"));
 		btnApagar = new JButton("Apagar", new ImageIcon("documents/images/apagar.jpg"));
 		btnSair = new JButton("Sair", new ImageIcon("documents/images/sair.jpg"));
@@ -56,6 +58,8 @@ public class Editor extends JFrame
 		pnlBotoes.add(btnLinha);
 		pnlBotoes.add(btnCirculo);
 		pnlBotoes.add(btnOval);
+		pnlBotoes.add(btnRetangulo);
+		pnlBotoes.add(btnPolilinha);
 		pnlBotoes.add(btnCores);
 		pnlBotoes.add(btnApagar);
 		pnlBotoes.add(btnSair);
@@ -84,6 +88,8 @@ public class Editor extends JFrame
 		btnLinha.addActionListener(new DesenhaReta());
 		btnOval.addActionListener(new DesenhaOval());
 		btnCirculo.addActionListener(new DesenhaCirculo());
+		btnRetangulo.addActionListener(new DesenhaRetangulo());
+		btnPolilinha.addActionListener(new DesenhaPolilinha());
 		btnCores.addActionListener(new SolicitaCores());
 		btnSalvar.addActionListener(new FazGravacao());
 	}
@@ -185,6 +191,42 @@ public class Editor extends JFrame
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaRaioCirculo = false;
+			}
+			else if (esperaIniRec){
+				p1.setCor(corAtual);
+				p1.setX(e.getX());
+				p1.setY(e.getY());
+				esperaIniRec = false;
+				esperaLargEAltRec = true;
+				statusBar1.setText("Mensagem: clique até onde a largura do retângulo vai");
+			}
+			else if (esperaLargEAltRec){
+				int largura = p1.getX() - e.getX();
+				if (p1.getX() < e.getX()){
+					largura = e.getX() - p1.getX();
+				}
+				esperaIniRec = false;
+				esperaLargEAltRec = true;
+				statusBar1.setText("Mensagem: clique até onde a altura do retângulo vai");
+
+				int altura = p1.getY() - e.getY();
+				if (p1.getY() < e.getY()){
+					largura = e.getY() - p1.getY();
+				}
+				figuras[qtasFiguras] = new Retangulo(p1.getX(), p1.getY(), largura , altura, corAtual);
+				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
+				qtasFiguras++;
+				esperaRaioCirculo = false;
+			}
+			else if (esperaIniPolilinha){
+				p1.setCor(corAtual);
+				p1.setX(e.getX());
+				p1.setY(e.getY());
+				esperaIniRec = false;
+				esperaLargEAltRec = true;
+				statusBar1.setText("Mensagem: clique até onde a largura do retângulo vai");
+			}
+
 			}
 
 		}
@@ -338,6 +380,11 @@ public class Editor extends JFrame
 		esperaRaioCirculo = false;
 		esperaIniOval = false;
 		esperaFimOval = false;
+		esperaIniRec = false;
+		esperaLargRec = false;
+		esperaAltRec = false;
+		esperaIniPolilinha = false;
+
 	}
 
 	private class DesenhaPonto implements ActionListener {
@@ -370,6 +417,20 @@ public class Editor extends JFrame
 			statusBar1.setText("Mensagem: clique o centro do círculo");
 			limpaEsperas();
 			esperaCentroCirculo = true;
+		}
+	}
+	private class DesenhaRetangulo implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			statusBar1.setText("Mensagem: clique o início do retângulo");
+			limpaEsperas();
+			esperaIniRec = true;
+		}
+	}
+	private class DesenhaPolilinha implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			statusBar1.setText("Mensagem: clique o início da polilinha");
+			limpaEsperas();
+			esperaIniPolilinha = true;
 		}
 	}
 	private class SolicitaCores implements ActionListener{
