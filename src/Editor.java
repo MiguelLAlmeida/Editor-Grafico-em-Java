@@ -96,7 +96,7 @@ public class Editor extends JFrame
 
 	public static void desenhaObjetos()
 	{
-	   pnlDesenho.paintComponent(pnlDesenho.getGraphics());
+	   //pnlDesenho.paintComponent(pnlDesenho.getGraphics());
 	}
 
 	public static void main(String[] args) {
@@ -111,11 +111,9 @@ public class Editor extends JFrame
 		}
 			}
 		);
-
 	}
 
-	private class MeuJPanel extends JPanel implements MouseListener, MouseMotionListener
-	{
+	private class MeuJPanel extends JPanel implements MouseListener, MouseMotionListener {
 		JPanel pnlStatus = new JPanel();
 
 		public void paintComponent(Graphics g)
@@ -139,22 +137,22 @@ public class Editor extends JFrame
 				esperaPonto = false;
 			}
 			else if (esperaInicioReta)
-				{
-					p1.setCor(corAtual);
-					p1.setX(e.getX());
-					p1.setY(e.getY());
-					esperaInicioReta = false;
-					esperaFimReta = true;
-				    statusBar1.setText("Mensagem: clique o ponto final da reta");
-				 }
+			{
+				p1.setCor(corAtual);
+				p1.setX(e.getX());
+				p1.setY(e.getY());
+				esperaInicioReta = false;
+				esperaFimReta = true;
+				statusBar1.setText("Mensagem: clique o ponto final da reta");
+			}
 			else if (esperaFimReta)
-				{
-					esperaInicioReta = false;
-					esperaFimReta = false;
-					figuras[qtasFiguras] =new Linha(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
-					figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
-					qtasFiguras++;
-				}
+			{
+				esperaInicioReta = false;
+				esperaFimReta = false;
+				figuras[qtasFiguras] =new Linha(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
+				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
+				qtasFiguras++;
+			}
 			else if (esperaIniOval){
 				p1.setCor(corAtual);
 				p1.setX(e.getX());
@@ -227,10 +225,19 @@ public class Editor extends JFrame
 				statusBar1.setText("Mensagem: clique até onde a largura do retângulo vai");
 			}
 
-			}
-
 		}
-
+		public MeuJPanel()
+		{
+			super();
+			addMouseListener(this);
+			addMouseMotionListener(this);
+			pnlStatus.setLayout(new GridLayout(1,2));
+			statusBar1 = new JLabel("Mensagem");
+			statusBar2 = new JLabel("Coordenada");
+			pnlStatus.add(statusBar1);
+			pnlStatus.add(statusBar2);
+			getContentPane().add(pnlStatus, BorderLayout.SOUTH);
+		}
 		public void mouseEntered (MouseEvent e)
 		{
 			// não faz nada por enquanto
@@ -250,35 +257,21 @@ public class Editor extends JFrame
 		{
 
 		}
-
 		public void mouseMoved(MouseEvent e)
 		{
 			statusBar2.setText("Coordenada: "+e.getX()+","+e.getY());
 		}
-
-		public MeuJPanel()
-		{
-			super();
-			addMouseListener(this);
-			addMouseMotionListener(this);
-			pnlStatus.setLayout(new GridLayout(1,2));
-			statusBar1 = new JLabel("Mensagem");
-			statusBar2 = new JLabel("Coordenada");
-			pnlStatus.add(statusBar1);
-			pnlStatus.add(statusBar2);
-			getContentPane().add(pnlStatus, BorderLayout.SOUTH);
-		}
 	}
 
 	private class FazGravacao implements ActionListener {
-		  public void actionPerformed(ActionEvent e)
-		  {
+		public void actionPerformed(ActionEvent e)
+		{
 			JFileChooser arqEscolhido = new JFileChooser ();
 			arqEscolhido.setDialogTitle("Abrir");
-		  	int result = arqEscolhido.showOpenDialog(Editor.this);
-	        if (result == JFileChooser.APPROVE_OPTION) {
-	            arquivo = arqEscolhido.getSelectedFile();
-	            try
+			int result = arqEscolhido.showOpenDialog(Editor.this);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				arquivo = arqEscolhido.getSelectedFile();
+				try
 				{
 					if (arquivo != null){
 						BufferedWriter arqFiguras = new BufferedWriter(new FileWriter(arquivo.getName()));
@@ -294,15 +287,15 @@ public class Editor extends JFrame
 							System.out.println("Erro de gravação no arquivo");
 						}
 					}
-	            }
-	            catch (IOException ex)
-				{
-	            	System.out.println("Arquivo não pôde ser aberto");
 				}
-	            // processamento do arquivo conforme descrito na apostila (página 7)
-	        }
-		  }
+				catch (IOException ex)
+				{
+					System.out.println("Arquivo não pôde ser aberto");
+				}
+				// processamento do arquivo conforme descrito na apostila (página 7)
+			}
 		}
+	}
 
 	private class FazAbertura implements ActionListener {
 		public void actionPerformed(ActionEvent e)	// código executado no evento
@@ -370,8 +363,6 @@ public class Editor extends JFrame
 			}
 		}
 	}
-
-
 	private void limpaEsperas() {
 		esperaPonto = false;
 		esperaInicioReta = false;
@@ -381,29 +372,28 @@ public class Editor extends JFrame
 		esperaIniOval = false;
 		esperaFimOval = false;
 		esperaIniRec = false;
-		esperaLargRec = false;
-		esperaAltRec = false;
+		esperaLargEAltRec = false;
 		esperaIniPolilinha = false;
 
 	}
 
 	private class DesenhaPonto implements ActionListener {
-		  public void actionPerformed(ActionEvent e)
-		  {
-			  statusBar1.setText("Mensagem: clique o local do ponto desejado");
-			  limpaEsperas();
-			  esperaPonto = true;
-		  }
+		public void actionPerformed(ActionEvent e)
+		{
+			statusBar1.setText("Mensagem: clique o local do ponto desejado");
+			limpaEsperas();
+			esperaPonto = true;
 		}
+	}
 
 	private class DesenhaReta implements ActionListener {
-		  public void actionPerformed(ActionEvent e)
-		  {
-			  statusBar1.setText("Mensagem: clique o ponto inicial da reta");
-			  limpaEsperas();
-			  esperaInicioReta = true;
-		  }
+		public void actionPerformed(ActionEvent e)
+		{
+			statusBar1.setText("Mensagem: clique o ponto inicial da reta");
+			limpaEsperas();
+			esperaInicioReta = true;
 		}
+	}
 	private class DesenhaOval implements ActionListener{
 		public void actionPerformed(ActionEvent e)
 		{
@@ -439,3 +429,5 @@ public class Editor extends JFrame
 		}
 	}
 }
+
+
