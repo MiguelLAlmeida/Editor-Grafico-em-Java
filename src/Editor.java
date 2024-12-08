@@ -96,7 +96,8 @@ public class Editor extends JFrame
 
 	public static void desenhaObjetos()
 	{
-	   //pnlDesenho.paintComponent(pnlDesenho.getGraphics());
+	   pnlDesenho.paintComponent(pnlDesenho.getGraphics());
+
 	}
 
 	public static void main(String[] args) {
@@ -349,6 +350,7 @@ public class Editor extends JFrame
 
 						frame.setTitle(arquivo.getName());
 						desenhaObjetos();
+
 					}
 					catch (IOException ioe)
 					{

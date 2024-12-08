@@ -63,10 +63,10 @@ public class Oval extends Ponto {
 		return	transformaString("o",5)+
 				transformaString(getX(),5)+
 				transformaString(getY(),5)+
-				transformaString(getRaioA(),5)+
-				transformaString(getRaioB(),5)+
 				transformaString(getCor().getRed(),5)+
 				transformaString(getCor().getGreen(),5)+
-				transformaString(getCor().getBlue(),5);
+				transformaString(getCor().getBlue(),5)+
+				transformaString(getRaioA(),5)+
+				transformaString(getRaioB(),5);
 	}
 }

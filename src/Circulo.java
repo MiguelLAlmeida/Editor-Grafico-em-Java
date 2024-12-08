@@ -54,9 +54,9 @@ public class Circulo extends Ponto {
 		return	transformaString("o",5)+
 				transformaString(getX(),5)+
 				transformaString(getY(),5)+
-				transformaString(getRaio(),5)+
 				transformaString(getCor().getRed(),5)+
 				transformaString(getCor().getGreen(),5)+
-				transformaString(getCor().getBlue(),5);
+				transformaString(getCor().getBlue(),5)+
+				transformaString(getRaio(),5);
 	}
 }
