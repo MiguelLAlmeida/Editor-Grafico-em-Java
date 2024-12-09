@@ -39,7 +39,7 @@ public class Editor extends JFrame
 		btnSelecionar = new JButton("Selecionar", new ImageIcon("documents/images/Selecionar"));
 		btnMudarCor = new JButton("Mudar Cor Selecionadas");
 		btnCores = new JButton("Cores", new ImageIcon("documents/images/cores.jpg"));
-		btnApagar = new JButton("Apagar", new ImageIcon("documents/images/apagar.jpg"));
+		btnApagar = new JButton("Apagar Selecionadas", new ImageIcon("documents/images/apagar.jpg"));
 		btnSair = new JButton("Sair", new ImageIcon("documents/images/sair.jpg"));
 
 		// cria o JPanel que armazenará os botões
@@ -98,6 +98,7 @@ public class Editor extends JFrame
 		btnCores.addActionListener(new SolicitaCores());
 		btnSelecionar.addActionListener(new Selecionar());
 		btnMudarCor.addActionListener(new MudaCorSelecionadas());
+		btnApagar.addActionListener(new apagarSelecionadas());
 		btnSalvar.addActionListener(new FazGravacao());
 
 		qtasSelecionadas = 0;
@@ -469,6 +470,28 @@ public class Editor extends JFrame
 				figuras[figurasSelecionadas[i]].setCor(corAtual);
 				repaint();
 				revalidate();
+			}
+		}
+	}
+
+	private class apagarSelecionadas implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (qtasSelecionadas == 0){
+				statusBar1.setText("Mensagem: Nenhuma figura existente para apagar.");
+			}
+			else {
+				for (int i = 0; i < qtasSelecionadas; i++) {
+					int indice = figurasSelecionadas[i];
+					for (int in = indice; in < qtasFiguras - 1; in++) {
+						figuras[in] = figuras[in + 1];
+					}
+					qtasFiguras--;
+				}
+				qtasSelecionadas = 0;
+				repaint();
+				revalidate();
+				statusBar1.setText("Mensagem: Figuras selecionadas apagadas.");
 			}
 		}
 	}
