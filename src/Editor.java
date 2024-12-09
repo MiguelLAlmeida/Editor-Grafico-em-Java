@@ -6,7 +6,7 @@ import java.io.*;
 public class Editor extends JFrame
 {
 	private JButton btnPonto, btnLinha, btnCirculo, btnOval, btnRetangulo, btnPolilinha, btnCores,
-	btnAbrir, btnSalvar, btnApagar, btnSair;
+	btnAbrir, btnSalvar, btnApagar, btnSair, btnSelecionar, btnMudarCor;
 	static private JPanel pnlBotoes;
 	static private JDesktopPane panDesenho;
 	static private JInternalFrame frame;
@@ -14,7 +14,8 @@ public class Editor extends JFrame
 
 	private static File arquivo;
 	private static Ponto[] figuras = new Ponto[20];
-	static int qtasFiguras;
+	private static int[] figurasSelecionadas = new int[20];
+	static int qtasFiguras, qtasSelecionadas;
 	private JLabel statusBar1, statusBar2;
 	static boolean esperaPonto, esperaInicioReta, esperaFimReta, esperaCentroCirculo,esperaRaioCirculo, esperaIniOval, esperaFimOval, esperaIniRec, esperaLargEAltRec, esperaIniPolilinha;
 	static private Color corAtual = Color.black;
@@ -33,8 +34,10 @@ public class Editor extends JFrame
 		btnLinha = new JButton("Linha", new ImageIcon("documents/images/linha.jpg"));
 		btnCirculo = new JButton("Círculo", new ImageIcon("documents/images/circulo.jpg"));
 		btnOval = new JButton("Elipse", new ImageIcon("documents/images/elipse.jpg"));
-		btnRetangulo = new JButton("Retângulo", new ImageIcon("documents/image/retangulo.jpg"));
-		btnPolilinha = new JButton("Polilinha", new ImageIcon("documents/image/polilinha.jpg"));
+		btnRetangulo = new JButton("Retângulo", new ImageIcon("documents/images/retangulo.jpg"));
+		btnPolilinha = new JButton("Polilinha", new ImageIcon("documents/images/polilinha.jpg"));
+		btnSelecionar = new JButton("Selecionar", new ImageIcon("documents/images/Selecionar"));
+		btnMudarCor = new JButton("Mudar Cor Selecionadas");
 		btnCores = new JButton("Cores", new ImageIcon("documents/images/cores.jpg"));
 		btnApagar = new JButton("Apagar", new ImageIcon("documents/images/apagar.jpg"));
 		btnSair = new JButton("Sair", new ImageIcon("documents/images/sair.jpg"));
@@ -60,7 +63,9 @@ public class Editor extends JFrame
 		pnlBotoes.add(btnOval);
 		pnlBotoes.add(btnRetangulo);
 		pnlBotoes.add(btnPolilinha);
+		pnlBotoes.add(btnSelecionar);
 		pnlBotoes.add(btnCores);
+		pnlBotoes.add(btnMudarCor);
 		pnlBotoes.add(btnApagar);
 		pnlBotoes.add(btnSair);
 
@@ -91,7 +96,11 @@ public class Editor extends JFrame
 		btnRetangulo.addActionListener(new DesenhaRetangulo());
 		btnPolilinha.addActionListener(new DesenhaPolilinha());
 		btnCores.addActionListener(new SolicitaCores());
+		btnSelecionar.addActionListener(new Selecionar());
+		btnMudarCor.addActionListener(new MudaCorSelecionadas());
 		btnSalvar.addActionListener(new FazGravacao());
+
+		qtasSelecionadas = 0;
 	}
 
 	public static void desenhaObjetos()
@@ -136,6 +145,7 @@ public class Editor extends JFrame
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaPonto = false;
+				revalidate();
 			}
 			else if (esperaInicioReta)
 			{
@@ -153,6 +163,7 @@ public class Editor extends JFrame
 				figuras[qtasFiguras] =new Linha(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
+				revalidate();
 			}
 			else if (esperaIniOval){
 				p1.setCor(corAtual);
@@ -172,6 +183,7 @@ public class Editor extends JFrame
 				figuras[qtasFiguras] = new Oval(centroX, centroY, raioA, raioB, corAtual);
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
+				revalidate();
 			}
 			else if (esperaCentroCirculo){
 				p1.setCor(corAtual);
@@ -190,6 +202,7 @@ public class Editor extends JFrame
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaRaioCirculo = false;
+				revalidate();
 			}
 			else if (esperaIniRec){
 				p1.setCor(corAtual);
@@ -198,6 +211,7 @@ public class Editor extends JFrame
 				esperaIniRec = false;
 				esperaLargEAltRec = true;
 				statusBar1.setText("Mensagem: clique até onde a largura do retângulo vai");
+
 			}
 			else if (esperaLargEAltRec){
 				int largura = p1.getX() - e.getX();
@@ -216,6 +230,7 @@ public class Editor extends JFrame
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaRaioCirculo = false;
+				revalidate();
 			}
 			else if (esperaIniPolilinha){
 				p1.setCor(corAtual);
@@ -293,7 +308,6 @@ public class Editor extends JFrame
 				{
 					System.out.println("Arquivo não pôde ser aberto");
 				}
-				// processamento do arquivo conforme descrito na apostila (página 7)
 			}
 		}
 	}
@@ -326,12 +340,12 @@ public class Editor extends JFrame
 							switch (tipo.charAt(0))
 							{
 								case 'p' :
-									figuras[qtasFiguras] = new Ponto(xBase, yBase, cor);
+									 figuras[qtasFiguras] = new Ponto(xBase, yBase, cor);
 									break;
 								case 'l' :
 									int xFinal =Integer.parseInt(linha.substring(30,35).trim());
 									int yFinal =Integer.parseInt(linha.substring(35,40).trim());
-									figuras[qtasFiguras] = new Linha(xBase, yBase, xFinal, yFinal, cor);
+									 figuras[qtasFiguras] = new Linha(xBase, yBase, xFinal, yFinal, cor);
 									break;
 								case 'c' :
 									int raio =Integer.parseInt(linha.substring(30,35).trim());
@@ -361,7 +375,6 @@ public class Editor extends JFrame
 				{
 					System.out.println("Arquivo não pôde ser aberto");
 				}
-				// processamento do arquivo conforme descrito na apostila (página 7)
 			}
 		}
 	}
@@ -428,6 +441,35 @@ public class Editor extends JFrame
 	private class SolicitaCores implements ActionListener{
 		public void actionPerformed(ActionEvent e){
 			corAtual = JColorChooser.showDialog(null, "Selecione uma cor", Color.black);
+		}
+	}
+	private class Selecionar implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			statusBar1.setText("Mensagem: Selecione um índice do vetor de Figuras");
+			String input = JOptionPane.showInputDialog(Editor.this, "Digite o índice do vetor de Figuras para selecionar:", "Seleção de Índice", JOptionPane.QUESTION_MESSAGE);
+			int indice = Integer.parseInt(input.trim());
+			if (indice >= 0 && indice < qtasFiguras){
+				Graphics2D g2d = (Graphics2D) pnlDesenho.getGraphics(); // Código pego em https://www.guj.com.br/t/ajuda-com-drawline/26784
+				g2d.setStroke(new BasicStroke(2));
+				figuras[indice].desenha(figuras[indice].getCor(), g2d);
+				figurasSelecionadas[qtasSelecionadas] = indice;
+				qtasSelecionadas++;
+			}
+			else
+				statusBar1.setText("Mensagem: Índice Inválido");
+		}
+	}
+	private class MudaCorSelecionadas implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e){
+			statusBar1.setText("Mensagem: Selecione a Cor que deseja mudar as figuras selecionadas");
+			new SolicitaCores();
+			for (int i = 0; i < qtasSelecionadas; i++){
+				figuras[figurasSelecionadas[i]].setCor(corAtual);
+				repaint();
+				revalidate();
+			}
 		}
 	}
 }

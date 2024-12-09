@@ -33,6 +33,7 @@ public class Circulo extends Ponto {
 	{
 		super(xCentro, yCentro, novaCor);  // construtor de Ponto(x,y)
 		setRaio(novoRaio);
+		setCor(novaCor);
 	}
 	public String transformaString(int valor, int quantasPosicoes) {
 		String cadeia = new String(valor+"");
