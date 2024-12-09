@@ -98,10 +98,17 @@ public class Editor extends JFrame
 		btnCores.addActionListener(new SolicitaCores());
 		btnSelecionar.addActionListener(new Selecionar());
 		btnMudarCor.addActionListener(new MudaCorSelecionadas());
-		btnApagar.addActionListener(new apagarSelecionadas());
+		btnApagar.addActionListener(new ApagarSelecionadas());
 		btnSalvar.addActionListener(new FazGravacao());
 
 		qtasSelecionadas = 0;
+
+		btnSair.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
 	}
 
 	public static void desenhaObjetos()
@@ -146,7 +153,6 @@ public class Editor extends JFrame
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaPonto = false;
-				revalidate();
 			}
 			else if (esperaInicioReta)
 			{
@@ -164,7 +170,6 @@ public class Editor extends JFrame
 				figuras[qtasFiguras] =new Linha(p1.getX(), p1.getY(), e.getX(), e.getY(), corAtual);
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
-				revalidate();
 			}
 			else if (esperaIniOval){
 				p1.setCor(corAtual);
@@ -175,8 +180,20 @@ public class Editor extends JFrame
 				statusBar1.setText("Mensagem: clique na outra extremidade do Oval");
 			}
 			else if (esperaFimOval){
-				int raioA = (e.getX() - p1.getX()) / 2;
-				int raioB = (e.getY() - p1.getY()) / 2;
+				int raioA = 0;
+				if (e.getX() >= p1.getX()) {
+					raioA = (e.getX() - p1.getX()) / 2;
+				} else {
+					raioA = (p1.getX() - e.getX()) / 2;
+				}
+
+				int raioB = 0;
+				if (e.getY() >= p1.getY()) {
+					raioB = (e.getY() - p1.getY()) / 2;
+				} else {
+					raioB = (p1.getY() - e.getY()) / 2;
+				}
+
 				int centroX = (p1.getX() + e.getX()) / 2;
 				int centroY = (p1.getY() + e.getY()) / 2;
 
@@ -184,7 +201,6 @@ public class Editor extends JFrame
 				figuras[qtasFiguras] = new Oval(centroX, centroY, raioA, raioB, corAtual);
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
-				revalidate();
 			}
 			else if (esperaCentroCirculo){
 				p1.setCor(corAtual);
@@ -203,7 +219,6 @@ public class Editor extends JFrame
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaRaioCirculo = false;
-				revalidate();
 			}
 			else if (esperaIniRec){
 				p1.setCor(corAtual);
@@ -231,7 +246,6 @@ public class Editor extends JFrame
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaRaioCirculo = false;
-				revalidate();
 			}
 			else if (esperaIniPolilinha){
 				p1.setCor(corAtual);
@@ -294,11 +308,10 @@ public class Editor extends JFrame
 						BufferedWriter arqFiguras = new BufferedWriter(new FileWriter(arquivo.getName()));
 						try {
 							for (int i = 0; i < qtasFiguras; i++){
-								System.out.println(i+1);
-								System.out.println(figuras[i].toString());
 								arqFiguras.write(figuras[i].toString() + "\n");
 							}
 							arqFiguras.close();
+							statusBar1.setText("Mensagem: Figuras Salvas.");
 						}
 						catch (IOException ioe) {
 							System.out.println("Erro de gravação no arquivo");
@@ -330,7 +343,6 @@ public class Editor extends JFrame
 						String linha = arqFiguras.readLine();
 						while (linha != null)
 						{
-							System.out.println(linha);
 							String tipo = linha.substring(0,5).trim();
 							int xBase = Integer.parseInt(linha.substring(5,10).trim());
 							int yBase = Integer.parseInt(linha.substring(10,15).trim());
@@ -474,7 +486,7 @@ public class Editor extends JFrame
 		}
 	}
 
-	private class apagarSelecionadas implements ActionListener{
+	private class ApagarSelecionadas implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (qtasSelecionadas == 0){

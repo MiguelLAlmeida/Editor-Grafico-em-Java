@@ -2,7 +2,7 @@ import java.awt.*;
 public class Circulo extends Ponto {
 
 	int raio;
-	Color cor = Color.black;
+	Color cor;
 	
 	public void desenha(Color corDesenho, Graphics g) {
 		g.setColor(corDesenho);
@@ -31,9 +31,12 @@ public class Circulo extends Ponto {
 	
 	public Circulo(int xCentro, int yCentro, int novoRaio, Color novaCor)
 	{
-		super(xCentro, yCentro, novaCor);  // construtor de Ponto(x,y)
+		super(xCentro, yCentro, novaCor);
 		setRaio(novoRaio);
 		setCor(novaCor);
+	}
+	public Color getCor(){
+		return cor;
 	}
 	public String transformaString(int valor, int quantasPosicoes) {
 		String cadeia = new String(valor+"");
@@ -52,7 +55,7 @@ public class Circulo extends Ponto {
 
 	public String toString()
 	{
-		return	transformaString("o",5)+
+		return	transformaString("c",5)+
 				transformaString(getX(),5)+
 				transformaString(getY(),5)+
 				transformaString(getCor().getRed(),5)+

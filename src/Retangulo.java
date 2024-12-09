@@ -6,8 +6,6 @@ public class Retangulo extends Ponto {
     int largura, altura;
     Color cor;
 
-
-
     public void desenha(Color corDesenho, Graphics g) {
         g.setColor(corDesenho);
         g.drawRect(super.getX(), super.getY(), largura, altura);
@@ -15,16 +13,12 @@ public class Retangulo extends Ponto {
         // a altura e a largura são passadas pelo usuário.
     }
 
-
-
     public Retangulo() {
         super();
         setAltura(0);
         setLargura(0);
         setCor(Color.black);
     }
-
-
 
     public void setLargura(int novaLargura) {
         largura = novaLargura;
@@ -38,6 +32,9 @@ public class Retangulo extends Ponto {
         cor = novaCor;
     }
 
+    public Color getCor(){
+        return cor;
+    }
     public Retangulo(int xOrigem, int yOrigem, int novaLargura, int novaAltura, Color novaCor) {
         super(xOrigem, yOrigem, novaCor);  // construtor de Ponto(x,y)
         setLargura(novaLargura);

@@ -44,13 +44,13 @@ public class Linha extends Ponto {
 
 	 public String toString()
 	 {
-		 return	transformaString("o",5)+
+		 return	transformaString("l",5)+
 				 transformaString(getX(),5)+
 				 transformaString(getY(),5)+
-				 transformaString(getPontoFinal().getX(),5)+
-				 transformaString(getPontoFinal().getX(),5)+
 				 transformaString(getCor().getRed(),5)+
 				 transformaString(getCor().getGreen(),5)+
-				 transformaString(getCor().getBlue(),5);
+				 transformaString(getCor().getBlue(),5)+
+				 transformaString(getPontoFinal().getX(),5)+
+				 transformaString(getPontoFinal().getX(),5);
 	 }
 }
