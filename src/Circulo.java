@@ -2,7 +2,7 @@ import java.awt.*;
 public class Circulo extends Ponto {
 
 	int raio;
-	Color cor;
+	Color cor = Color.black;
 	
 	public void desenha(Color corDesenho, Graphics g) {
 		g.setColor(corDesenho);
