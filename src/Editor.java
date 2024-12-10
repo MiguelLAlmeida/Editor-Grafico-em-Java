@@ -28,21 +28,21 @@ public class Editor extends JFrame
 		// cria os botões do editor
 
 		Icon imgAbrir = new ImageIcon("documents/images/abrir.jpg");
-		btnAbrir = new JButton("Abrir", imgAbrir);
-		btnSalvar = new JButton("Salvar", new ImageIcon("documents/images/salvar.jpg"));
-		btnPonto = new JButton("Ponto", new ImageIcon("documents/images/ponto.jpg"));
-		btnLinha = new JButton("Linha", new ImageIcon("documents/images/linha.jpg"));
-		btnCirculo = new JButton("Círculo", new ImageIcon("documents/images/circulo.jpg"));
-		btnOval = new JButton("Elipse", new ImageIcon("documents/images/elipse.jpg"));
-		btnRetangulo = new JButton("Retângulo", new ImageIcon("documents/images/retangulo.jpg"));
-		btnPolilinha = new JButton("Polilinha", new ImageIcon("documents/images/polilinha.jpg"));
-		btnSelecionar = new JButton("Selecionar", new ImageIcon("documents/images/Selecionar"));
-		btnMudarCor = new JButton("Mudar Cor Selecionadas");
-		btnCores = new JButton("Cores", new ImageIcon("documents/images/cores.jpg"));
-		btnDeslocar = new JButton("Deslocar", new ImageIcon("documents/images/deslocar.jpg"));
-		btnLimpaFiguras = new JButton("Limpa Figuras", new ImageIcon("documents/images/lixo.jpg"));
-		btnLimpaSelecionadas = new JButton("Limpa Selecionadas", new ImageIcon("documents/images/lixo.jpg"));
-		btnApagar = new JButton("Apagar Selecionadas", new ImageIcon("documents/images/apagar.jpg"));
+		btnAbrir = new JButton("Abr", imgAbrir);
+		btnSalvar = new JButton("Slv", new ImageIcon("documents/images/salvar.jpg"));
+		btnPonto = new JButton("Pnt", new ImageIcon("documents/images/ponto.jpg"));
+		btnLinha = new JButton("Lin", new ImageIcon("documents/images/linha.jpg"));
+		btnCirculo = new JButton("Cir", new ImageIcon("documents/images/circulo.jpg"));
+		btnOval = new JButton("Elip", new ImageIcon("documents/images/elipse.jpg"));
+		btnRetangulo = new JButton("Rtng", new ImageIcon("documents/images/retangulo.jpg"));
+		btnPolilinha = new JButton("Poli", new ImageIcon("documents/images/polilinha.jpg"));
+		btnSelecionar = new JButton("Selec", new ImageIcon("documents/images/Selecionar"));
+		btnMudarCor = new JButton("Muda Cor");
+		btnCores = new JButton("Cor", new ImageIcon("documents/images/cores.jpg"));
+		btnDeslocar = new JButton("Desloc", new ImageIcon("documents/images/deslocar.jpg"));
+		btnLimpaFiguras = new JButton("Lmp Fig", new ImageIcon("documents/images/lixo.jpg"));
+		btnLimpaSelecionadas = new JButton("Lmp Sel", new ImageIcon("documents/images/lixo.jpg"));
+		btnApagar = new JButton("Apg Sel", new ImageIcon("documents/images/apagar.jpg"));
 		btnSair = new JButton("Sair", new ImageIcon("documents/images/sair.jpg"));
 
 		// cria o JPanel que armazenará os botões
@@ -81,7 +81,7 @@ public class Editor extends JFrame
 		Container cntForm = getContentPane(); // acessa o painel de conteúdo do frame
 		cntForm.setLayout(new BorderLayout());
 		cntForm.add(pnlBotoes , BorderLayout.NORTH);
-
+		pnlBotoes.setSize(1500, 200);
 		panDesenho = new JDesktopPane();
 		cntForm.add(panDesenho);
 		frame = new JInternalFrame("Nenhum arquivo aberto", true, true, true, true);
@@ -241,10 +241,10 @@ public class Editor extends JFrame
 			else if (esperaLargEAltRec){
 				int largura = 0;
 				int altura = 0;
-				if (p1.getX() > e.getX()){
+				if (p1.getX() >= e.getX()){
 				 	largura = p1.getX() - e.getX();
 				}
-				if (p1.getX() < e.getX()){
+				else {
 					largura = e.getX() - p1.getX();
 				}
 
@@ -253,11 +253,11 @@ public class Editor extends JFrame
 					esperaLargEAltRec = true;
 					statusBar1.setText("Mensagem: clique até onde a altura do retângulo vai");
 
-					if (p1.getY() > e.getY()) {
+					if (p1.getY() >= e.getY()) {
 						altura = p1.getY() - e.getY();
 					}
 
-					if (p1.getY() < e.getY()) {
+					else {
 						altura = e.getY() - p1.getY();
 					}
 				}
@@ -266,60 +266,59 @@ public class Editor extends JFrame
 				qtasFiguras++;
 				esperaRaioCirculo = false;
 			}
-			/*else if (esperaIniPolilinha) {
+			else if (esperaIniPolilinha) {
 				int qtosPontos = 0;
 				int[] xPontos = new int[30];
 				int[] yPontos = new int[30];
+				int resposta = Integer.parseInt(JOptionPane.showInputDialog(Editor.this, "Digite a quantidade de pontos que você vai usar (máximo 30)", "Quantidade de pontos", JOptionPane.QUESTION_MESSAGE));
 
-				if (esperaIniPolilinha) {
-					if (qtosPontos == 0) {
-						statusBar1.setText("Clique no primeiro ponto");
-						p1.setCor(corAtual);
-						p1.setX(e.getX());
-						p1.setY(e.getY());
-						xPontos[qtosPontos] = e.getX();
-						yPontos[qtosPontos] = e.getY();
-						qtosPontos++;
-
-					}
-
-					boolean podeAdicionarPonto = true;
-
-					while (podeAdicionarPonto) {
-						p1.setCor(corAtual);
-						p1.setX(e.getX());
-						p1.setY(e.getY());
-						xPontos[qtosPontos] = e.getX();
-						yPontos[qtosPontos] = e.getY();
-						qtosPontos++;
-
-						if (qtosPontos == 30) {
-							statusBar1.setText("Você colocou o máximo de pontos possíveis. Crie outra polilinha.");
-							break;
-						}
-
-						int resposta = JOptionPane.showConfirmDialog(null, "Deseja colocar mais um ponto?",
-								"Adicionar ponto", JOptionPane.YES_NO_OPTION);
-
-						if (resposta == JOptionPane.YES_OPTION) {
-							statusBar1.setText("Clique para adicionar outro ponto.");
-						}
-						else if (resposta == JOptionPane.NO_OPTION) {
-							statusBar1.setText("Polilinha finalizada com " + qtosPontos + " pontos.");
-							podeAdicionarPonto = false;
-						}
-					}
-
-					figuras[qtasFiguras] = new Polilinha(p1.getX(), p1.getY(), xPontos, yPontos, corAtual);
-					figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
-					qtasFiguras++;
+				// Validação da quantidade de pontos
+				if (resposta > 30 || resposta < 1) {
+					statusBar1.setText("Valor de pontos passado é inválido. Clique novamente no botão e passe um valor válido.");
+					return;
+				} else {
+					qtosPontos = resposta;
 				}
 
-				esperaIniPolilinha = false;
-			}*/
+				statusBar1.setText("Clique no primeiro ponto.");
+
+				int finalQtosPontos = qtosPontos;
+				MouseListener mouseListener = new MouseAdapter() {
+					int pontosCapturados = 0;
+
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						if (pontosCapturados < finalQtosPontos) {
+							xPontos[pontosCapturados] = e.getX();
+							yPontos[pontosCapturados] = e.getY();
+
+							p1.setCor(corAtual);
+							p1.setX(e.getX());
+							p1.setY(e.getY());
+							p1.desenha(p1.getCor(), pnlDesenho.getGraphics());
+
+							pontosCapturados++;
+
+							if (pontosCapturados == finalQtosPontos) {
+								figuras[qtasFiguras] = new Polilinha(p1.getX(), p1.getY(), xPontos, yPontos, corAtual);
+								figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
+								qtasFiguras++;
+								statusBar1.setText("Polilinha desenhada com " + finalQtosPontos + " pontos.");
+								pnlDesenho.removeMouseListener(this);
+								esperaIniPolilinha = false;
+							} else {
+								statusBar1.setText("Clique no próximo ponto.");
+							}
+						}
+					}
+				};
 
 
+				pnlDesenho.addMouseListener(mouseListener);
+			}
 		}
+
+
 		public MeuJPanel()
 		{
 			super();
@@ -595,6 +594,7 @@ public class Editor extends JFrame
 				repaint();
 				revalidate();
 			}
+			qtasSelecionadas = 0;
 		}
 	}
 
@@ -606,6 +606,7 @@ public class Editor extends JFrame
 				repaint();
 				revalidate();
 			}
+			qtasFiguras = 0;
 		}
 	}
 }
