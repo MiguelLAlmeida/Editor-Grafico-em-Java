@@ -6,7 +6,7 @@ import java.io.*;
 public class Editor extends JFrame
 {
 	private JButton btnPonto, btnLinha, btnCirculo, btnOval, btnRetangulo, btnPolilinha, btnCores,
-	btnAbrir, btnSalvar, btnApagar, btnSair, btnSelecionar, btnMudarCor;
+	btnAbrir, btnSalvar, btnApagar, btnSair, btnSelecionar, btnMudarCor, btnDeslocar, btnLimpaSelecionadas, btnLimpaFiguras;
 	static private JPanel pnlBotoes;
 	static private JDesktopPane panDesenho;
 	static private JInternalFrame frame;
@@ -39,6 +39,9 @@ public class Editor extends JFrame
 		btnSelecionar = new JButton("Selecionar", new ImageIcon("documents/images/Selecionar"));
 		btnMudarCor = new JButton("Mudar Cor Selecionadas");
 		btnCores = new JButton("Cores", new ImageIcon("documents/images/cores.jpg"));
+		btnDeslocar = new JButton("Deslocar", new ImageIcon("documents/images/deslocar.jpg"));
+		btnLimpaFiguras = new JButton("Limpa Figuras", new ImageIcon("documents/images/lixo.jpg"));
+		btnLimpaSelecionadas = new JButton("Limpa Selecionadas", new ImageIcon("documents/images/lixo.jpg"));
 		btnApagar = new JButton("Apagar Selecionadas", new ImageIcon("documents/images/apagar.jpg"));
 		btnSair = new JButton("Sair", new ImageIcon("documents/images/sair.jpg"));
 
@@ -66,6 +69,9 @@ public class Editor extends JFrame
 		pnlBotoes.add(btnSelecionar);
 		pnlBotoes.add(btnCores);
 		pnlBotoes.add(btnMudarCor);
+		pnlBotoes.add(btnDeslocar);
+		pnlBotoes.add(btnLimpaFiguras);
+		pnlBotoes.add(btnLimpaSelecionadas);
 		pnlBotoes.add(btnApagar);
 		pnlBotoes.add(btnSair);
 
@@ -98,6 +104,9 @@ public class Editor extends JFrame
 		btnCores.addActionListener(new SolicitaCores());
 		btnSelecionar.addActionListener(new Selecionar());
 		btnMudarCor.addActionListener(new MudaCorSelecionadas());
+		btnDeslocar.addActionListener(new Deslocamento());
+		btnLimpaFiguras.addActionListener(new LimpaVetorFiguras());
+		btnLimpaFiguras.addActionListener(new LimpaVetorSelecionadas());
 		btnApagar.addActionListener(new ApagarSelecionadas());
 		btnSalvar.addActionListener(new FazGravacao());
 
@@ -230,31 +239,85 @@ public class Editor extends JFrame
 
 			}
 			else if (esperaLargEAltRec){
-				int largura = p1.getX() - e.getX();
+				int largura = 0;
+				int altura = 0;
+				if (p1.getX() > e.getX()){
+				 	largura = p1.getX() - e.getX();
+				}
 				if (p1.getX() < e.getX()){
 					largura = e.getX() - p1.getX();
 				}
-				esperaIniRec = false;
-				esperaLargEAltRec = true;
-				statusBar1.setText("Mensagem: clique até onde a altura do retângulo vai");
 
-				int altura = p1.getY() - e.getY();
-				if (p1.getY() < e.getY()){
-					largura = e.getY() - p1.getY();
+				if(largura != 0) {
+					esperaIniRec = false;
+					esperaLargEAltRec = true;
+					statusBar1.setText("Mensagem: clique até onde a altura do retângulo vai");
+
+					if (p1.getY() > e.getY()) {
+						altura = p1.getY() - e.getY();
+					}
+
+					if (p1.getY() < e.getY()) {
+						altura = e.getY() - p1.getY();
+					}
 				}
 				figuras[qtasFiguras] = new Retangulo(p1.getX(), p1.getY(), largura , altura, corAtual);
 				figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
 				qtasFiguras++;
 				esperaRaioCirculo = false;
 			}
-			else if (esperaIniPolilinha){
-				p1.setCor(corAtual);
-				p1.setX(e.getX());
-				p1.setY(e.getY());
-				esperaIniRec = false;
-				esperaLargEAltRec = true;
-				statusBar1.setText("Mensagem: clique até onde a largura do retângulo vai");
-			}
+			/*else if (esperaIniPolilinha) {
+				int qtosPontos = 0;
+				int[] xPontos = new int[30];
+				int[] yPontos = new int[30];
+
+				if (esperaIniPolilinha) {
+					if (qtosPontos == 0) {
+						statusBar1.setText("Clique no primeiro ponto");
+						p1.setCor(corAtual);
+						p1.setX(e.getX());
+						p1.setY(e.getY());
+						xPontos[qtosPontos] = e.getX();
+						yPontos[qtosPontos] = e.getY();
+						qtosPontos++;
+
+					}
+
+					boolean podeAdicionarPonto = true;
+
+					while (podeAdicionarPonto) {
+						p1.setCor(corAtual);
+						p1.setX(e.getX());
+						p1.setY(e.getY());
+						xPontos[qtosPontos] = e.getX();
+						yPontos[qtosPontos] = e.getY();
+						qtosPontos++;
+
+						if (qtosPontos == 30) {
+							statusBar1.setText("Você colocou o máximo de pontos possíveis. Crie outra polilinha.");
+							break;
+						}
+
+						int resposta = JOptionPane.showConfirmDialog(null, "Deseja colocar mais um ponto?",
+								"Adicionar ponto", JOptionPane.YES_NO_OPTION);
+
+						if (resposta == JOptionPane.YES_OPTION) {
+							statusBar1.setText("Clique para adicionar outro ponto.");
+						}
+						else if (resposta == JOptionPane.NO_OPTION) {
+							statusBar1.setText("Polilinha finalizada com " + qtosPontos + " pontos.");
+							podeAdicionarPonto = false;
+						}
+					}
+
+					figuras[qtasFiguras] = new Polilinha(p1.getX(), p1.getY(), xPontos, yPontos, corAtual);
+					figuras[qtasFiguras].desenha(figuras[qtasFiguras].getCor(), pnlDesenho.getGraphics());
+					qtasFiguras++;
+				}
+
+				esperaIniPolilinha = false;
+			}*/
+
 
 		}
 		public MeuJPanel()
@@ -446,9 +509,10 @@ public class Editor extends JFrame
 	}
 	private class DesenhaPolilinha implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
-			statusBar1.setText("Mensagem: clique o início da polilinha");
+			statusBar1.setText("Mensagem: clique o início da polilinha   --   Se você quiser finalizar, clique novamente no botão");
 			limpaEsperas();
 			esperaIniPolilinha = true;
+
 		}
 	}
 	private class SolicitaCores implements ActionListener{
@@ -507,6 +571,44 @@ public class Editor extends JFrame
 			}
 		}
 	}
+
+	private class Deslocamento implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int deltaX = Integer.parseInt(JOptionPane.showInputDialog(Editor.this, "Digite o deslocamento horizontal das figuras selecionadas", "Deslocamento horizontal", JOptionPane.QUESTION_MESSAGE));
+			int deltaY = Integer.parseInt(JOptionPane.showInputDialog(Editor.this, "Digite o deslocamento vertical das figuras selecionadas", "Deslocamento vertical", JOptionPane.QUESTION_MESSAGE));
+
+			for (int indice = 0; indice < qtasSelecionadas; indice++){
+				figuras[figurasSelecionadas[indice]].setX(p1.getX() + deltaX);
+				figuras[figurasSelecionadas[indice]].setY(p1.getY() + deltaY);
+				repaint();
+				revalidate();
+			}
+		}
+	}
+
+	private class LimpaVetorSelecionadas implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for(int indice = 0; indice < qtasSelecionadas; indice++){
+				figuras[figurasSelecionadas[indice]] = null;
+				repaint();
+				revalidate();
+			}
+		}
+	}
+
+	private class LimpaVetorFiguras implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for(int indice = 0; indice < qtasFiguras; indice++){
+				figuras[indice] = null;
+				repaint();
+				revalidate();
+			}
+		}
+	}
 }
+
 
 
