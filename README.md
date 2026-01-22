@@ -94,7 +94,7 @@ Este projeto é ideal para estudantes que desejam:
 
 ## 👨‍💻 Autores
 
-**Miguel Lopes de Almeida**
-**João Pedro Alves Torres**
+- **Miguel Lopes de Almeida**
+- **João Pedro Alves Torres**
 
 ---
